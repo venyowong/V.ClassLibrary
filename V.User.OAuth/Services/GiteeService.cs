@@ -27,7 +27,15 @@ namespace V.User.OAuth.Services
 
         public string GetAuthorizeUrl(HttpContext context)
         {
-            var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize?service=gitee";
+            var redirectUrl = this.config["OAuth:BaseUrl"];
+            if (string.IsNullOrEmpty(redirectUrl))
+            {
+                redirectUrl = context.Request.GetAbsoluteUrl("/usermodule/authorize?service=gitee");
+            }
+            else
+            {
+                redirectUrl += "/usermodule/authorize?service=gitee";
+            }
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
             return $"https://gitee.com/oauth/authorize?client_id={this.config["OAuth:Gitee:client_id"]}&redirect_uri={redirectUrl}&response_type=code&scope=user_info%20emails";
         }

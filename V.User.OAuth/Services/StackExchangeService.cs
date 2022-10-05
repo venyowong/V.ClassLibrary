@@ -31,7 +31,15 @@ namespace V.User.OAuth.Services
 
         public string GetAuthorizeUrl(HttpContext context)
         {
-            var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize{context.Request.QueryString}";
+            var redirectUrl = this.config["OAuth:BaseUrl"];
+            if (string.IsNullOrEmpty(redirectUrl))
+            {
+                redirectUrl = context.Request.GetAbsoluteUrl($"/usermodule/authorize{context.Request.QueryString}");
+            }
+            else
+            {
+                redirectUrl += $"/usermodule/authorize{context.Request.QueryString}";
+            }
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
             return $"https://stackoverflow.com/oauth?client_id={this.config["OAuth:Stackexchange:client_id"]}&redirect_uri={redirectUrl}";
         }

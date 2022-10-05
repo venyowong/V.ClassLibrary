@@ -9,6 +9,15 @@
 ## 官方示例项目
 [V.TouristGuide](https://github.com/venyowong/V.TouristGuide)
 
+## 初始化数据库
+本项目目前只支持 PostgreSQL，首先在你的项目数据库中执行 user 表初始化脚本 init_user.sql
+```
+su postgres
+psql -d dbName
+\i init_user.sql
+```
+并且在代码里将 IDbConnection 注入到容器中
+
 ## 如何使用
 
 ```
@@ -265,6 +274,8 @@ Response：
 
 ## 启用 OAuth
 调用 AddUserModule 方法时传入 IUserModuleCallback 参数，并且在调用 UseUserModule 方法时传入 true，即可启用 OAuth，具体配置方法可参考 V.User.OAuth 项目
+
+值得注意的是，若用户在使用 OAuth 登录后修改的用户信息，可能在下次 OAuth 登录时被覆盖为三方平台数据
 
 ## 注
 该用户模块目前只有账号主体为手机号的场景详细测试过，若使用过程中遇到问题，请提交 issue 或 PR

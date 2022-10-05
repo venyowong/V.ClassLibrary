@@ -74,11 +74,26 @@ namespace V.User.Services
             }
             else
             {
-                usr2.Name = user.Name;
-                usr2.Avatar = user.Avatar;
-                usr2.Location = user.Location;
-                usr2.Company = user.Company;
-                usr2.Bio = user.Bio;
+                if (!string.IsNullOrWhiteSpace(user.Name))
+                {
+                    usr2.Name = user.Name;
+                }
+                if (!string.IsNullOrWhiteSpace(user.Avatar))
+                {
+                    usr2.Avatar = user.Avatar;
+                }
+                if (!string.IsNullOrWhiteSpace(user.Location))
+                {
+                    usr2.Location = user.Location;
+                }
+                if (!string.IsNullOrWhiteSpace(user.Company))
+                {
+                    usr2.Company = user.Company;
+                }
+                if (!string.IsNullOrWhiteSpace(user.Bio))
+                {
+                    usr2.Bio = user.Bio;
+                }
                 if (this.config.AccountMode != 0 || usr == null)
                 {
                     usr2.Mail = user.Mail;

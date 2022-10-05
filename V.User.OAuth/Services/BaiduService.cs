@@ -26,7 +26,15 @@ namespace V.User.OAuth.Services
 
         public string GetAuthorizeUrl(HttpContext context)
         {
-            var redirectUrl = context.Request.GetAbsoluteUrl("/usermodule/authorize?service=baidu");
+            var redirectUrl = this.config["OAuth:BaseUrl"];
+            if (string.IsNullOrEmpty(redirectUrl))
+            {
+                redirectUrl = context.Request.GetAbsoluteUrl("/usermodule/authorize?service=baidu");
+            }
+            else
+            {
+                redirectUrl += "/usermodule/authorize?service=baidu";
+            }
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
             return $"http://openapi.baidu.com/oauth/2.0/authorize?response_type=code&client_id={this.config["OAuth:Baidu:client_id"]}&redirect_uri={redirectUrl}&scope=basic&display=popup";
         }
