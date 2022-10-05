@@ -99,6 +99,19 @@ Baidu 应用回调地址格式：`https://localhost:7167/usermodule/authorize?se
 
 ### 其他三方平台还在努力支持中...
 
+### 接口基地址配置
+
+当接口挂在代理服务器下，部分场景会导致 asp.net core 获取不到完整的原始请求链接，因此增加了 OAuth:BaseUrl 配置用于配置接口基地址(即 /usermodule 前面的部分)，若该配置为空，则认为可获取到完整原始请求链接，会自动拼接出回调地址
+```
+"OAuth": {
+    "Baidu": {
+        "client_id": "xxx",
+        "client_secret": "xxx"
+    },
+    "BaseUrl": "http://localhost/test"
+}
+```
+
 ## 如果这个项目有帮助到你，不妨支持一下
 
 ![](https://raw.githubusercontent.com/venyowong/V.ClassLibrary/main/imgs/%E5%BE%AE%E4%BF%A1%E6%94%B6%E6%AC%BE%E7%A0%81.jpg)
