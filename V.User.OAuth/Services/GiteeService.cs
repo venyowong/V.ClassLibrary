@@ -29,7 +29,7 @@ namespace V.User.OAuth.Services
         {
             var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize?service=gitee";
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
-            return $"https://gitee.com/oauth/authorize?client_id={this.config["Oauth:Gitee:client_id"]}&redirect_uri={redirectUrl}&response_type=code&scope=user_info%20emails";
+            return $"https://gitee.com/oauth/authorize?client_id={this.config["OAuth:Gitee:client_id"]}&redirect_uri={redirectUrl}&response_type=code&scope=user_info%20emails";
         }
 
         public async Task<UserInfo> GetUserInfo(HttpContext context, string authCode)
@@ -38,8 +38,8 @@ namespace V.User.OAuth.Services
             var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize?service=gitee";
             var tokenRequest = new
             {
-                client_id = this.config["Oauth:Gitee:client_id"],
-                client_secret = this.config["Oauth:Gitee:client_secret"],
+                client_id = this.config["OAuth:Gitee:client_id"],
+                client_secret = this.config["OAuth:Gitee:client_secret"],
                 code = authCode,
                 redirect_uri = redirectUrl
             };

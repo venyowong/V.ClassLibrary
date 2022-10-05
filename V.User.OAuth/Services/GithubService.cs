@@ -29,7 +29,7 @@ namespace V.User.OAuth.Services
         {
             var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize{context.Request.QueryString}";
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
-            return $"https://github.com/login/oauth/authorize?client_id={this.config["Oauth:Github:client_id"]}&redirect_uri={redirectUrl}";
+            return $"https://github.com/login/oauth/authorize?client_id={this.config["OAuth:Github:client_id"]}&redirect_uri={redirectUrl}";
         }
 
         public async Task<UserInfo> GetUserInfo(HttpContext context, string authCode)
@@ -37,8 +37,8 @@ namespace V.User.OAuth.Services
             var client = this.clientFactory.CreateClient();
             var tokenRequest = new
             {
-                client_id = this.config["Oauth:Github:client_id"],
-                client_secret = this.config["Oauth:Github:client_secret"],
+                client_id = this.config["OAuth:Github:client_id"],
+                client_secret = this.config["OAuth:Github:client_secret"],
                 code = authCode
             };
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://github.com/login/oauth/access_token");

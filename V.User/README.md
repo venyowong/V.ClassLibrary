@@ -267,5 +267,9 @@ Response：
 调用 AddUserModule 方法时传入 IUserModuleCallback 参数，并且在调用 UseUserModule 方法时传入 true，即可启用 OAuth，具体配置方法可参考 V.User.OAuth 项目
 
 ## 注
-该用户模块目前只有账号主体为手机号的场景详细测试过，若使用过程中遇到问题，请提交 issue
- 或 PR
+该用户模块目前只有账号主体为手机号的场景详细测试过，若使用过程中遇到问题，请提交 issue 或 PR
+
+## 如果这个项目有帮助到你，不妨支持一下
+
+![](https://raw.githubusercontent.com/venyowong/V.ClassLibrary/main/imgs/%E5%BE%AE%E4%BF%A1%E6%94%B6%E6%AC%BE%E7%A0%81.jpg)
+![](https://raw.githubusercontent.com/venyowong/V.ClassLibrary/main/imgs/%E6%94%AF%E4%BB%98%E5%AE%9D%E6%94%B6%E6%AC%BE%E7%A0%81.jpg)

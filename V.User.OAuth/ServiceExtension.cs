@@ -14,7 +14,8 @@ namespace V.User.OAuth
             services.AddHttpClient();
             services.AddTransient<IOAuthService, GithubService>()
                 .AddTransient<IOAuthService, GiteeService>()
-                .AddTransient<IOAuthService, StackExchangeService>();
+                .AddTransient<IOAuthService, StackExchangeService>()
+                .AddTransient<IOAuthService, BaiduService>();
             return services;
         }
 

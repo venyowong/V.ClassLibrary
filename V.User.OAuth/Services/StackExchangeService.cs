@@ -33,7 +33,7 @@ namespace V.User.OAuth.Services
         {
             var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize{context.Request.QueryString}";
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
-            return $"https://stackoverflow.com/oauth?client_id={this.config["Oauth:Stackexchange:client_id"]}&redirect_uri={redirectUrl}";
+            return $"https://stackoverflow.com/oauth?client_id={this.config["OAuth:Stackexchange:client_id"]}&redirect_uri={redirectUrl}";
         }
 
         public async Task<UserInfo> GetUserInfo(HttpContext context, string authCode)
@@ -44,7 +44,7 @@ namespace V.User.OAuth.Services
                 .ToArray());
             var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize?{queryString}";
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
-            var form = $"client_id={this.config["Oauth:Stackexchange:client_id"]}&client_secret={this.config["Oauth:Stackexchange:client_secret"]}&code={authCode}&redirect_uri={redirectUrl}";
+            var form = $"client_id={this.config["OAuth:Stackexchange:client_id"]}&client_secret={this.config["OAuth:Stackexchange:client_secret"]}&code={authCode}&redirect_uri={redirectUrl}";
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://stackoverflow.com/oauth/access_token");
             requestMessage.Content = new StringContent(form, Encoding.UTF8, "application/x-www-form-urlencoded");
             requestMessage.Headers.UserAgent.Add(new ProductInfoHeaderValue("V.User.OAuth", "1.0"));
@@ -61,7 +61,7 @@ namespace V.User.OAuth.Services
                 return null;
             }
 
-            response = await client.GetAsync($"https://api.stackexchange.com/2.3/me?key={this.config["Oauth:Stackexchange:key"]}&access_token={token}&site=stackoverflow");
+            response = await client.GetAsync($"https://api.stackexchange.com/2.3/me?key={this.config["OAuth:Stackexchange:key"]}&access_token={token}&site=stackoverflow");
             var json = await response.ReadAsDecompressedString();
             var result = json.ToObj<JObject>();
             if (result == null)
