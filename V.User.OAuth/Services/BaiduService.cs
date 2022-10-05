@@ -42,7 +42,15 @@ namespace V.User.OAuth.Services
         public async Task<UserInfo> GetUserInfo(HttpContext context, string authCode)
         {
             var client = this.clientFactory.CreateClient();
-            var redirectUrl = context.Request.GetAbsoluteUrl("/usermodule/authorize?service=baidu");
+            var redirectUrl = this.config["OAuth:BaseUrl"];
+            if (string.IsNullOrEmpty(redirectUrl))
+            {
+                redirectUrl = context.Request.GetAbsoluteUrl("/usermodule/authorize?service=baidu");
+            }
+            else
+            {
+                redirectUrl += "/usermodule/authorize?service=baidu";
+            }
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
             var response = await client.GetAsync($"https://openapi.baidu.com/oauth/2.0/token?grant_type=authorization_code&code={authCode}&client_id={this.config["OAuth:Baidu:client_id"]}&client_secret={this.config["OAuth:Baidu:client_secret"]}&redirect_uri={redirectUrl}");
             var tokenResult = await response.ReadAsObj<JObject>();

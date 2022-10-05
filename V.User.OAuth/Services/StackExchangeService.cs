@@ -50,7 +50,15 @@ namespace V.User.OAuth.Services
             var queryString = string.Join("&", context.Request.Query.Where(x => x.Key != "code")
                 .Select(x => $"{x.Key}={x.Value}")
                 .ToArray());
-            var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize?{queryString}";
+            var redirectUrl = this.config["OAuth:BaseUrl"];
+            if (string.IsNullOrEmpty(redirectUrl))
+            {
+                redirectUrl = context.Request.GetAbsoluteUrl($"/usermodule/authorize{context.Request.QueryString}");
+            }
+            else
+            {
+                redirectUrl += $"/usermodule/authorize{context.Request.QueryString}";
+            }
             redirectUrl = WebUtility.UrlEncode(redirectUrl);
             var form = $"client_id={this.config["OAuth:Stackexchange:client_id"]}&client_secret={this.config["OAuth:Stackexchange:client_secret"]}&code={authCode}&redirect_uri={redirectUrl}";
             var requestMessage = new HttpRequestMessage(HttpMethod.Post, "https://stackoverflow.com/oauth/access_token");

@@ -43,7 +43,15 @@ namespace V.User.OAuth.Services
         public async Task<UserInfo> GetUserInfo(HttpContext context, string authCode)
         {
             var client = this.clientFactory.CreateClient();
-            var redirectUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/usermodule/authorize?service=gitee";
+            var redirectUrl = this.config["OAuth:BaseUrl"];
+            if (string.IsNullOrEmpty(redirectUrl))
+            {
+                redirectUrl = context.Request.GetAbsoluteUrl("/usermodule/authorize?service=gitee");
+            }
+            else
+            {
+                redirectUrl += "/usermodule/authorize?service=gitee";
+            }
             var tokenRequest = new
             {
                 client_id = this.config["OAuth:Gitee:client_id"],
