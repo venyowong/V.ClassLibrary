@@ -154,6 +154,11 @@ namespace V.QueryParser
                                         exp = string.Empty;
                                         ope = Symbol.Eq;
                                         continue;
+                                    case "!=":
+                                        expType = ExpType.Value;
+                                        exp = string.Empty;
+                                        ope = Symbol.Neq;
+                                        continue;
                                     case "&&":
                                         expType = ExpType.Exp;
                                         exp = string.Empty;

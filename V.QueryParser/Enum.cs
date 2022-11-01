@@ -28,6 +28,7 @@ namespace V.QueryParser
         Lt,
         Lte,
         Eq,
+        Neq,
         And,
         Or
     }
