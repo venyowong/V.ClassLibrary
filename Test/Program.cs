@@ -1,5 +1,13 @@
+using Serilog;
 using Test;
+using V.QueryParser;
 using V.User.OAuth;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+
+//var query = new QueryExpression("key1 > value1 && key2 == value2 || key3 < value3");
 
 var builder = WebApplication.CreateBuilder(args);
 

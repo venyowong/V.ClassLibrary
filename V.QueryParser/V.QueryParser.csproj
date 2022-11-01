@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	  <Version>1.0.0</Version>
+	  <Authors>Venyo</Authors>
+	  <Description>木叉一人工作室封装的查询表达式解析器</Description>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageProjectUrl>https://github.com/venyowong/V.ClassLibrary</PackageProjectUrl>
+	  <PackageIcon>logo.jpg</PackageIcon>
+	  <PackageTags>QueryExpression</PackageTags>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../logo.jpg" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.9.0" />
+  </ItemGroup>
+
+</Project>

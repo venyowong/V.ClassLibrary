@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\V.QueryParser\V.QueryParser.csproj" />
     <ProjectReference Include="..\V.User.Oauth\V.User.OAuth.csproj" />
   </ItemGroup>
 
