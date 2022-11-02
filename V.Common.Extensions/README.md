@@ -63,3 +63,8 @@ DES 加密，默认 key 为 Encoding.ASCII.GetBytes("670851ad")，默认 iv 为 
 
 ### DESDecrypt(byte[] key = null, byte[] iv = null) 方法
 DES 解密，默认 key 为 Encoding.ASCII.GetBytes("670851ad")，默认 iv 为 Encoding.ASCII.GetBytes("89532a19")
+
+## Converter
+
+### FromString(string value, Type type)
+将字符串转换为基础类型
