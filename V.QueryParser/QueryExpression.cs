@@ -250,7 +250,14 @@ namespace V.QueryParser
                 case ExpType.DoubleQuotes:
                 case ExpType.SingleQuotes:
                 case ExpType.Value:
-                    this.Queries.Add(new QueryExpression(key, ope, exp));
+                    if (this.Queries.Any())
+                    {
+                        this.Queries.Add(new QueryExpression(key, ope, exp));
+                    }
+                    else
+                    {
+                        value = exp;
+                    }
                     break;
                 case ExpType.Key:
                 case ExpType.Operator:
