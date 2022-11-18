@@ -17,10 +17,8 @@ namespace V.User.Models
 
         public string Source { get; set; }
 
-        [Column("source_name")]
         public string SourceName { get; set; }
 
-        [Column("platform_id")]
         public string PlatformId { get; set; }
 
         public string Mail { get; set; }
@@ -35,22 +33,16 @@ namespace V.User.Models
 
         public string Bio { get; set; }
 
-        [Column("mask_mobile")]
         public string MaskMobile { get; set; }
 
-        [Column("md5_mobile")]
         public string Md5Mobile { get; set; }
 
-        [Column("encrypted_mobile")]
         public string EncryptedMobile { get; set; }
 
-        [Column("is_valid")]
         public bool IsValid { get; set; }
 
-        [Column("create_time")]
         public DateTime CreateTime { get; set; }
 
-        [Column("update_time")]
         public DateTime UpdateTime { get; set; }
     }
 }
