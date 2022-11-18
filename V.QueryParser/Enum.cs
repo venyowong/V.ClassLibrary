@@ -30,7 +30,8 @@ namespace V.QueryParser
         Eq,
         Neq,
         And,
-        Or
+        Or,
+        Like
     }
 
     public enum ExpType

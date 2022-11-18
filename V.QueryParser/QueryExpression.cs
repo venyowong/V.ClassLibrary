@@ -127,7 +127,7 @@ namespace V.QueryParser
                         switch (condition[i])
                         {
                             case ' ':
-                                switch (exp)
+                                switch (exp.ToLower())
                                 {
                                     case ">":
                                         expType = ExpType.Value;
@@ -158,6 +158,11 @@ namespace V.QueryParser
                                         expType = ExpType.Value;
                                         exp = string.Empty;
                                         ope = Symbol.Neq;
+                                        continue;
+                                    case "like":
+                                        expType = ExpType.Value;
+                                        exp = string.Empty;
+                                        ope = Symbol.Like;
                                         continue;
                                     case "&&":
                                         expType = ExpType.Exp;
