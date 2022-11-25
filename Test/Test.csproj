@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\V.Quartz\V.Quartz.csproj" />
     <ProjectReference Include="..\V.QueryParser\V.QueryParser.csproj" />
     <ProjectReference Include="..\V.User.Oauth\V.User.OAuth.csproj" />
   </ItemGroup>
