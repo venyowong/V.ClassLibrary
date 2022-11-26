@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,6 +14,12 @@ namespace V.User.Extensions
     {
         public static IApplicationBuilder UseUserModule(this IApplicationBuilder app, bool useOAuth = false)
         {
+            app.Use(async (context, next) =>
+            {
+                context.Request.EnableBuffering();
+                await next();
+            });
+
             app.UseMiddleware<UserMiddleware>();
             if (useOAuth)
             {
