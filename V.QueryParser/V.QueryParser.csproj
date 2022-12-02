@@ -8,11 +8,13 @@
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <PackageProjectUrl>https://github.com/venyowong/V.ClassLibrary</PackageProjectUrl>
 	  <PackageIcon>logo.jpg</PackageIcon>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageTags>QueryExpression</PackageTags>
   </PropertyGroup>
 
 	<ItemGroup>
 		<None Include="../logo.jpg" Pack="true" PackagePath="\"/>
+		<None Include="README.md" Pack="true" PackagePath="\"/>
 	</ItemGroup>
 
   <ItemGroup>
