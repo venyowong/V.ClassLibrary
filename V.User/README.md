@@ -36,6 +36,13 @@ public void ConfigureServices(IServiceCollection services)
             c.TencentSmsSignName = "腾讯云短信已审核过的签名";
             c.TencentSmsTemplateId = "腾讯云短信已审核过的模板id";
         });
+
+    // 使用 SqlKata 来访问数据库，这样后续就可以支持多种数据库而不用改代码了
+    services.AddTransient(_ =>
+    {
+        var db = new QueryFactory(new NpgsqlConnection("Host=127.0.0.1;Username=postgres;Password=xxx;Database=postgres"), new PostgresCompiler());
+        return db;
+    });
 }
 
 public void Configure(IApplicationBuilder app)
