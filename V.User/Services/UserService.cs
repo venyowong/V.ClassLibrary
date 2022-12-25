@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using V.Common.Extensions;
+using V.SwitchableCache;
 using V.User.Models;
 
 namespace V.User.Services
 {
     public class UserService
     {
-        private CacheService cacheService;
+        private ICacheService cacheService;
         private UserDao dao;
 
-        public UserService(CacheService cacheService, UserDao dao)
+        public UserService(ICacheService cacheService, UserDao dao)
         {
             this.cacheService = cacheService;
             this.dao = dao;

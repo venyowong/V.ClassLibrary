@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "V.QueryParser", "V.QueryParser\V.QueryParser.csproj", "{1A9423D4-FDF6-4D17-B65B-5CB3BAED3F05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V.Quartz", "V.Quartz\V.Quartz.csproj", "{3C01216F-6FC8-4A5E-8C16-BD6E1F66C323}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "V.Quartz", "V.Quartz\V.Quartz.csproj", "{3C01216F-6FC8-4A5E-8C16-BD6E1F66C323}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V.SwitchableCache", "V.SwitchableCache\V.SwitchableCache.csproj", "{DBC2FEF9-655C-4A22-9CD3-67B99E8587C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{3C01216F-6FC8-4A5E-8C16-BD6E1F66C323}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C01216F-6FC8-4A5E-8C16-BD6E1F66C323}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C01216F-6FC8-4A5E-8C16-BD6E1F66C323}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBC2FEF9-655C-4A22-9CD3-67B99E8587C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBC2FEF9-655C-4A22-9CD3-67B99E8587C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBC2FEF9-655C-4A22-9CD3-67B99E8587C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBC2FEF9-655C-4A22-9CD3-67B99E8587C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

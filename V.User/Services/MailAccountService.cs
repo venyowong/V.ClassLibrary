@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using V.Common.Extensions;
+using V.SwitchableCache;
 using V.User.Extensions;
 using V.User.Models;
 using V.User.OAuth;
@@ -15,10 +16,10 @@ namespace V.User.Services
         private Configuration config;
         private UserService service;
         private MailService mailService;
-        private CacheService cacheService;
+        private ICacheService cacheService;
 
         public MailAccountService(Configuration config, UserService service, 
-            MailService mailService, CacheService cacheService)
+            MailService mailService, ICacheService cacheService)
         {
             this.config = config;
             this.service = service;

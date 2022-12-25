@@ -6,6 +6,7 @@ using System.Text;
 using V.User.Services;
 using Microsoft.AspNetCore.Builder;
 using V.User.OAuth;
+using V.SwitchableCache;
 
 namespace V.User.Extensions
 {
@@ -68,8 +69,8 @@ namespace V.User.Extensions
                 }
             }
 
+            services.AddSwitchableCache(configuration.RedisConnectionString, configuration.RedisDb);
             services.AddSingleton(configuration)
-                .AddTransient<CacheService>()
                 .AddTransient<MailService>()
                 .AddTransient<UserDao>()
                 .AddTransient<UserService>()

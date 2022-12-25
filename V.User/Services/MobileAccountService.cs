@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using V.Common.Extensions;
+using V.SwitchableCache;
 using V.User.Extensions;
 using V.User.Models;
 using V.User.OAuth;
@@ -15,10 +16,10 @@ namespace V.User.Services
         private SmsService smsService;
         private UserService service;
         private Configuration config;
-        private CacheService cacheService;
+        private ICacheService cacheService;
 
         public MobileAccountService(SmsService smsService, UserService service,
-            Configuration config, CacheService cacheService)
+            Configuration config, ICacheService cacheService)
         {
             this.smsService = smsService;
             this.service = service;
