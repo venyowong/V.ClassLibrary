@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -144,5 +145,25 @@ namespace V.Common.Extensions
             }
         }
         #endregion
+
+        /// <summary>
+        /// 解析日期字符串
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="format"></param>
+        /// <returns>解析失败则返回 default(DateTime)</returns>
+        public static DateTime TryParseDateTime(this string str, string format = null)
+        {
+            if (string.IsNullOrWhiteSpace(format))
+            {
+                DateTime.TryParse(str, out DateTime result);
+                return result;
+            }
+            else
+            {
+                DateTime.TryParseExact(str, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result);
+                return result;
+            }
+        }
     }
 }
