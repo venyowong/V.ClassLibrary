@@ -16,7 +16,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-var query = new QueryExpression("key1.key2 like 'val'");
+var query = new QueryExpression("(sizeLevel == 'B' || sizeLevel == 'KB') && (creationDate >= '2022-12-25' && creationDate <= '2023-05-01')");
 
 var builder = WebApplication.CreateBuilder(args);
 

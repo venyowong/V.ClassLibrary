@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-	  <Version>1.0.3</Version>
+	  <Version>1.0.4</Version>
 	  <Authors>Venyo</Authors>
 	  <Description>木叉一人工作室封装的用户模块，包括手机号、邮箱登录以及 OAuth 授权登录等</Description>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -25,7 +25,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="SqlKata.Execution" Version="2.4.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.0.600" />
+    <PackageReference Include="StackExchange.Redis" Version="2.1.28" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.22.1" />
     <PackageReference Include="TencentCloudSDK.Sms" Version="3.0.609" />
   </ItemGroup>

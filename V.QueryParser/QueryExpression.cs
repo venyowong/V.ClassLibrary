@@ -255,13 +255,19 @@ namespace V.QueryParser
                 case ExpType.DoubleQuotes:
                 case ExpType.SingleQuotes:
                 case ExpType.Value:
-                    if (this.Queries.Any())
+                    if (this.Queries.Any() && !string.IsNullOrEmpty(key) && ope != Symbol.Invalid && !string.IsNullOrEmpty(exp))
                     {
                         this.Queries.Add(new QueryExpression(key, ope, exp));
                     }
                     else
                     {
                         value = exp;
+                    }
+                    break;
+                case ExpType.Exp:
+                    if (this.Queries.Any() && !string.IsNullOrEmpty(key) && ope != Symbol.Invalid && !string.IsNullOrEmpty(value))
+                    {
+                        this.Queries.Add(new QueryExpression(key, ope, value));
                     }
                     break;
                 case ExpType.Key:
