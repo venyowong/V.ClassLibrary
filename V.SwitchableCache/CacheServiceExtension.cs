@@ -15,7 +15,7 @@ namespace V.SwitchableCache
             }
 
             var result = init();
-            cacheService.StringSet(key, result.ToString(), expiry);
+            cacheService.StringSet(key, result.ToJson(), expiry);
             return result;
         }
 
@@ -28,7 +28,7 @@ namespace V.SwitchableCache
             }
 
             var result = await init();
-            cacheService.StringSet(key, result.ToString(), expiry);
+            cacheService.StringSet(key, result.ToJson(), expiry);
             return result;
         }
     }
