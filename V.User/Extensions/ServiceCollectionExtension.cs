@@ -7,6 +7,7 @@ using V.User.Services;
 using Microsoft.AspNetCore.Builder;
 using V.User.OAuth;
 using V.SwitchableCache;
+using V.Dapper.Extension;
 
 namespace V.User.Extensions
 {
@@ -70,6 +71,7 @@ namespace V.User.Extensions
             }
 
             services.AddSwitchableCache(configuration.RedisConnectionString, configuration.RedisDb);
+            DapperHelper.MakeDapperMapping("V.User.Models");
             services.AddSingleton(configuration)
                 .AddTransient<MailService>()
                 .AddTransient<UserDao>()
