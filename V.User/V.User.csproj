@@ -9,7 +9,7 @@
 	  <PackageProjectUrl>https://github.com/venyowong/V.ClassLibrary</PackageProjectUrl>
 	  <PackageIcon>logo.jpg</PackageIcon>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageTags>extension</PackageTags>
+	  <PackageTags>user</PackageTags>
   </PropertyGroup>
 
 	<ItemGroup>
