@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using V.User.Models;
+using V.User.Services;
 
 namespace Test.Controllers
 {
@@ -29,5 +31,8 @@ namespace Test.Controllers
             })
             .ToArray();
         }
+
+        [HttpGet("test")]
+        public Task<UserEntity> Test([FromServices] UserService userService) => userService.GetUser(1);
     }
 }

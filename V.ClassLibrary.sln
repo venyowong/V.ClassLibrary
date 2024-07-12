@@ -17,7 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "V.Quartz", "V.Quartz\V.Quar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "V.SwitchableCache", "V.SwitchableCache\V.SwitchableCache.csproj", "{DBC2FEF9-655C-4A22-9CD3-67B99E8587C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V.Dapper.Extension", "V.Dapper.Extension\V.Dapper.Extension.csproj", "{2F8104E4-D6D0-4305-AC48-F83896B4992D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "V.Dapper.Extension", "V.Dapper.Extension\V.Dapper.Extension.csproj", "{2F8104E4-D6D0-4305-AC48-F83896B4992D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V.Message", "V.Message\V.Message.csproj", "{0D8B16F8-B957-42E2-9269-E0625D70FAB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V.WeChat", "V.WeChat\V.WeChat.csproj", "{814C6A2C-AEB9-4714-933C-DF31F0B441FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,14 @@ Global
 		{2F8104E4-D6D0-4305-AC48-F83896B4992D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F8104E4-D6D0-4305-AC48-F83896B4992D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F8104E4-D6D0-4305-AC48-F83896B4992D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D8B16F8-B957-42E2-9269-E0625D70FAB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D8B16F8-B957-42E2-9269-E0625D70FAB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D8B16F8-B957-42E2-9269-E0625D70FAB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D8B16F8-B957-42E2-9269-E0625D70FAB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{814C6A2C-AEB9-4714-933C-DF31F0B441FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{814C6A2C-AEB9-4714-933C-DF31F0B441FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{814C6A2C-AEB9-4714-933C-DF31F0B441FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{814C6A2C-AEB9-4714-933C-DF31F0B441FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -29,7 +29,7 @@ builder.Services.AddTransientBothTypes<IScheduledJob, HelloJob>();
 
 builder.Services.AddTransient(_ =>
 {
-    var db = new QueryFactory(new NpgsqlConnection("Host=127.0.0.1;Username=postgres;Password=venyo283052;Database=postgres"), new PostgresCompiler());
+    var db = new QueryFactory(new NpgsqlConnection("Host=127.0.0.1;Username=postgres;Password=venyo283052;Database=vbranch"), new PostgresCompiler());
     db.Logger = sql =>
     {
         Log.Information(sql.Sql);
@@ -46,15 +46,17 @@ builder.Services.AddTransient<ILoginService, LoginService>()
     .AddJwt(builder.Configuration["Jwt:Secret"])
     .AddUserModule(c =>
     {
-        c.ServiceCode = "TouristGuide";
-        c.ServiceName = "¬√”Œ÷∏ƒœ";
+        c.ServiceCode = "V.Coox";
+        c.ServiceName = "Coox";
         c.NeedVerificationForSignUp = true;
-        c.AccountMode = 1;
-        c.TencentSmsSecretId = builder.Configuration["Tencent:Sms:SecretId"];
-        c.TencentSmsSecretKey = builder.Configuration["Tencent:Sms:SecretKey"];
-        c.TencentSmsAppId = builder.Configuration["Tencent:Sms:AppId"];
-        c.TencentSmsSignName = builder.Configuration["Tencent:Sms:SignName"];
-        c.TencentSmsTemplateId = builder.Configuration["Tencent:Sms:TemplateId"];
+        c.AccountMode = 0;
+        c.CacheMode = 1;
+        c.RedisConnectionString = builder.Configuration["Redis:ConnectionString"];
+        c.RedisDb = int.Parse(builder.Configuration["Redis:Db"]);
+        c.SmtpServer = builder.Configuration["Mail:Smtp:Server"];
+        c.SmtpPort = int.Parse(builder.Configuration["Mail:Smtp:Port"]);
+        c.AdmMailAccount = builder.Configuration["Mail:Admin:Account"];
+        c.AdmMailPwd = builder.Configuration["Mail:Admin:Password"];
     }, new UserModuleCallback());
 
 var app = builder.Build();
