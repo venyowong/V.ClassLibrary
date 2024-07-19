@@ -8,7 +8,7 @@ using TencentCloud.Sms.V20210111;
 using TencentCloud.Sms.V20210111.Models;
 using System.Linq;
 
-namespace V.Message.SMS
+namespace V.Messages.SMS
 {
     public class TencentSmsService
     {

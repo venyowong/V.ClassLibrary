@@ -11,10 +11,13 @@ using SqlKata.Compilers;
 using SqlKata.Execution;
 using Npgsql;
 using V.User;
+using V.Finance.Services;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
+
+var ranks = await new FundService().GetFundRanks("zq", 1, 100, "041");
 
 var query = new QueryExpression("(sizeLevel == 'B' || sizeLevel == 'KB') && (creationDate >= '2022-12-25' && creationDate <= '2023-05-01')");
 

@@ -14,12 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\V.Message\V.Message.csproj" />
+    <ProjectReference Include="..\V.Finance\V.Finance.csproj" />
+    <ProjectReference Include="..\V.Messages\V.Messages.csproj" />
     <ProjectReference Include="..\V.Quartz\V.Quartz.csproj" />
     <ProjectReference Include="..\V.QueryParser\V.QueryParser.csproj" />
     <ProjectReference Include="..\V.User.Oauth\V.User.OAuth.csproj" />
     <ProjectReference Include="..\V.User\V.User.csproj" />
-    <ProjectReference Include="..\V.WeChat\V.WeChat.csproj" />
   </ItemGroup>
 
 </Project>

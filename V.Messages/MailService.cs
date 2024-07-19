@@ -2,7 +2,7 @@
 using System.Net.Mail;
 using System.Net;
 
-namespace V.Message
+namespace V.Messages
 {
     public class MailService
     {
