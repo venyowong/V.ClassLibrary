@@ -112,7 +112,7 @@ namespace V.Finance.Services
             var first = navs.OrderBy(x => x.Date).First();
             var last = navs.OrderBy(x => x.Date).Last();
             var p = last.AccUnitNav / first.AccUnitNav - 1; // 策略收益
-            var n = navs.Count - 1; // 策略执行天数
+            var n = (last.Date - first.Date).TotalDays - 1; // 策略执行天数
             return Math.Pow(1 + (double)p, 250.0 / n) - 1;
         }
 

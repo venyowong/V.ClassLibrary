@@ -17,7 +17,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-var navs = await new FundService().GetFundNavs("003376");
+var navs = await new FundService().GetFundNavs("007091");
 navs = navs.FindAll(x => x.Date >= DateTime.Now.AddYears(-3));
 var financialService = new FinancialService();
 var y = financialService.CalcYieldAnnual(navs);
