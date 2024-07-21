@@ -16,7 +16,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-var query = new QueryExpression("(sizeLevel == 'B' || sizeLevel == 'KB') && (creationDate >= '2022-12-25' && creationDate <= '2023-05-01')");
+var query = new QueryExpression("platform == WinUI && deviceName == COLORFUL");
 
 var builder = WebApplication.CreateBuilder(args);
 
