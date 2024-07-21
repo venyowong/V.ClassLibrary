@@ -56,6 +56,26 @@ namespace V.Finance.Services
             return result;
         }
 
+        public List<IncreaseRate> GetIncreaseRates(List<FundNav> navs)
+        {
+            if (navs.IsNullOrEmpty())
+            {
+                return new List<IncreaseRate>();
+            }
+
+            navs = navs.OrderBy(x => x.Date).ToList();
+            var result = new List<IncreaseRate>();
+            for (int i = 1; i < navs.Count; i++)
+            {
+                result.Add(new IncreaseRate
+                {
+                    Date = navs[i].Date,
+                    Rate = navs[i].AccUnitNav / navs[i - 1].AccUnitNav - 1
+                });
+            }
+            return result;
+        }
+
         /// <summary>
         /// 获取当前时间节点的最新年报/半年报
         /// </summary>
@@ -80,7 +100,7 @@ namespace V.Finance.Services
         /// <summary>
         /// 计算年化收益率
         /// </summary>
-        /// <returns></returns>
+        /// <returns>年化收益率(小数形式)</returns>
         public double CalcYieldAnnual(List<FundNav> navs)
         {
             if (navs == null || navs.Count <= 1)
@@ -88,6 +108,7 @@ namespace V.Finance.Services
                 return 0;
             }
 
+            navs = navs.OrderBy(x => x.Date).ToList();
             var first = navs.OrderBy(x => x.Date).First();
             var last = navs.OrderBy(x => x.Date).Last();
             var p = last.AccUnitNav / first.AccUnitNav - 1; // 策略收益
@@ -98,28 +119,46 @@ namespace V.Finance.Services
         /// <summary>
         /// 计算最大回撤
         /// </summary>
-        /// <returns></returns>
-        public decimal CalcMaxDrawdown()
+        /// <returns>返回最大回撤(小数形式)，若结果为 0 则表示没有发生回撤</returns>
+        public decimal CalcMaxDrawdown(List<FundNav> navs)
         {
-
+            var rates = this.GetIncreaseRates(navs);
+            decimal p = 1, max = 0;
+            foreach (var rate in rates)
+            {
+                p *= 1 + rate.Rate;
+                if (p - 1 < max)
+                {
+                    max = p - 1;
+                }
+                if (p > 1)
+                {
+                    p = 1;
+                }
+            }
+            return max;
         }
 
         /// <summary>
         /// 计算波动率
         /// </summary>
         /// <returns></returns>
-        public decimal CalcVolatility()
+        public double CalcVolatility(List<FundNav> navs)
         {
-
+            var rates = this.GetIncreaseRates(navs); // 策略每日收益率
+            var average = (double)rates.Average(x => x.Rate); // 策略每日收益率的平均值
+            return Math.Sqrt(rates.Sum(x => Math.Pow((double)x.Rate - average, 2)) / (rates.Count - 1) * 250);
         }
 
         /// <summary>
         /// 计算夏普率
         /// </summary>
         /// <returns></returns>
-        public decimal CalcSharpe()
+        public double CalcSharpe(List<FundNav> navs)
         {
-
+            var yieldAnnual = this.CalcYieldAnnual(navs);
+            var volatility = this.CalcYieldAnnual(navs);
+            return (yieldAnnual - 0.0145) / volatility; // 无风险利率参考一年期定存利率
         }
     }
 }

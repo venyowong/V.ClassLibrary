@@ -17,7 +17,13 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-var ranks = await new FundService().GetFundRanks("zq", 1, 100, "041");
+var navs = await new FundService().GetFundNavs("003376");
+navs = navs.FindAll(x => x.Date >= DateTime.Now.AddYears(-3));
+var financialService = new FinancialService();
+var y = financialService.CalcYieldAnnual(navs);
+var m = financialService.CalcMaxDrawdown(navs);
+var v = financialService.CalcVolatility(navs);
+var s = financialService.CalcSharpe(navs);
 
 var query = new QueryExpression("(sizeLevel == 'B' || sizeLevel == 'KB') && (creationDate >= '2022-12-25' && creationDate <= '2023-05-01')");
 
