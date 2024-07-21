@@ -9,6 +9,7 @@
 	  <PackageProjectUrl>https://github.com/venyowong/V.ClassLibrary</PackageProjectUrl>
 	  <PackageIcon>logo.jpg</PackageIcon>
 	  <PackageTags>dapper,extension</PackageTags>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
 	<ItemGroup>

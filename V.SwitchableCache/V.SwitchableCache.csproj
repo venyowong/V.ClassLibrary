@@ -10,6 +10,7 @@
 	  <PackageIcon>logo.jpg</PackageIcon>
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageTags>cache,memory,redis</PackageTags>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
 	<ItemGroup>
