@@ -88,7 +88,7 @@ namespace V.Finance.Services
             }
             catch (Exception e)
             {
-                Log.Error(e, $"EmService.GetFundAssetConfigs {fundCode} 获取基金资产配置失败");
+                Log.Error(e, $"FundService.GetFundAssetConfigs {fundCode} 获取基金资产配置失败");
                 return null;
             }
         }
@@ -345,6 +345,46 @@ namespace V.Finance.Services
                     catch { }
                 }
                 return result;
+            }
+        }
+
+        /// <summary>
+        /// 获取基金持有人结构
+        /// </summary>
+        /// <param name="fundCode"></param>
+        /// <returns></returns>
+        public List<FundHolderStructure> GetFundHolderStructures(string fundCode)
+        {
+            try
+            {
+                var web = new HtmlWeb();
+                var doc = web.Load($"https://fundf10.eastmoney.com/FundArchivesDatas.aspx?type=cyrjg&code={fundCode}");
+                var rows = doc.DocumentNode.SelectNodes("//table[@class='w782 comm cyrjg']/tbody/tr");
+                return rows.Select(x =>
+                {
+                    var columns = x.SelectNodes("td");
+                    DateTime.TryParse(columns[0].InnerText, out DateTime date);
+                    decimal.TryParse(columns[1].InnerText.Replace("%", ""), out decimal org);
+                    decimal.TryParse(columns[2].InnerText.Replace("%", ""), out decimal personal);
+                    decimal.TryParse(columns[3].InnerText.Replace("%", ""), out decimal inner);
+                    decimal.TryParse(columns[4].InnerText, out decimal share);
+                    return new FundHolderStructure
+                    {
+                        Date = date,
+                        Share = share * 100000000,
+                        OrgRatio = org / 100m,
+                        PersonalRatio = personal / 100m,
+                        FundCode = fundCode,
+                        InnerRatio = inner / 100m
+                    };
+                })
+                .OrderBy(x => x.Date)
+                .ToList();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"FundService.GetFundHolderStructures {fundCode} 获取基金持有人结构失败");
+                return null;
             }
         }
     }
