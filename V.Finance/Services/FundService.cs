@@ -387,5 +387,50 @@ namespace V.Finance.Services
                 return null;
             }
         }
+
+        /// <summary>
+        /// 获取基金经理变动列表
+        /// </summary>
+        /// <param name="fundCode"></param>
+        /// <returns></returns>
+        public List<FundManagerChange> GetFundManagerChangeList(string fundCode)
+        {
+            try
+            {
+                var web = new HtmlWeb();
+                var doc = web.Load($"http://fundf10.eastmoney.com/jjjl_{fundCode}.html");
+                var rows = doc.DocumentNode.SelectNodes("//table[@class='w782 comm  jloff']/tbody/tr");
+                return rows.Select(x =>
+                {
+                    var columns = x.SelectNodes("td");
+                    DateTime.TryParse(columns[0].InnerText, out DateTime beginDate);
+                    var end = columns[1].InnerText;
+                    var endDate = DateTime.Now.Date;
+                    if (end != "至今")
+                    {
+                        DateTime.TryParse(end, out endDate);
+                    }
+                    var names = columns[2].SelectNodes("a");
+                    var nameList = names.Select(n => n.InnerText).ToList();
+                    var duration = columns[3].InnerText;
+                    decimal.TryParse(columns[4].InnerText.Replace("%", ""), out decimal yield);
+                    return new FundManagerChange
+                    {
+                        BeginDate = beginDate,
+                        EndDate = endDate,
+                        Names = nameList,
+                        Duration = duration,
+                        Yield = yield
+                    };
+                })
+                .OrderBy(x => x.BeginDate)
+                .ToList();
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"FundService.GetFundManagerChangeList {fundCode} 获取基金经理变动列表失败");
+                return null;
+            }
+        }
     }
 }
