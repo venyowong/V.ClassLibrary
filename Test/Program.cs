@@ -17,16 +17,8 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-var financialService = new FinancialService();
-var rate = await financialService.GetRiskFreeRate();
 var fundService = new FundService();
-var navs = await fundService.GetFundNavs("007994");
-var begin = DateTime.Now.Date.AddYears(-3);
-navs = navs.FindAll(x => x.Date >= begin);
-var yieldAnnual = financialService.CalcYieldAnnual(navs);
-var fisk = financialService.CalcDownsideRisk(navs);
-var sortino = await financialService.CalcSortinoRatio(navs, rate);
-//var result = fundService.GetFundManagerChangeList("010430");
+var navs = await fundService.GetFundNavs("159934");
 
 var query = new QueryExpression("(sizeLevel == 'B' || sizeLevel == 'KB') && (creationDate >= '2022-12-25' && creationDate <= '2023-05-01')");
 

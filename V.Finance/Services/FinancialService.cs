@@ -117,7 +117,7 @@ namespace V.Finance.Services
             var first = navs.OrderBy(x => x.Date).First();
             var last = navs.OrderBy(x => x.Date).Last();
             var p = last.AccUnitNav / first.AccUnitNav - 1; // 策略收益
-            var n = (last.Date - first.Date).TotalDays - 1; // 策略执行天数
+            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
             return Math.Pow(1 + (double)p, 365.0 / n) - 1;
         }
 
@@ -154,7 +154,7 @@ namespace V.Finance.Services
             var average = (double)rates.Average(x => x.Rate); // 策略每日收益率的平均值
             var first = navs.OrderBy(x => x.Date).First();
             var last = navs.OrderBy(x => x.Date).Last();
-            var n = (last.Date - first.Date).TotalDays - 1; // 策略执行天数
+            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
             return Math.Sqrt(rates.Sum(x => Math.Pow((double)x.Rate - average, 2)) / (n - 1) * 365);
         }
 
@@ -183,7 +183,7 @@ namespace V.Finance.Services
             var rates = this.GetIncreaseRates(navs); // 策略每日收益率
             var first = navs.OrderBy(x => x.Date).First();
             var last = navs.OrderBy(x => x.Date).Last();
-            var n = (last.Date - first.Date).TotalDays - 1; // 策略执行天数
+            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
             var rpi = 0d; // 策略至第 i 日的平均收益率
             var risk = 0d;
             for (int i = 0; i < rates.Count; i++)

@@ -11,11 +11,17 @@ namespace V.Finance.Services
 {
     public class StockService
     {
-        public async Task<List<StockPrice>> GetStockPrices(string stockCode)
+        /// <summary>
+        /// 获取行情数据
+        /// </summary>
+        /// <param name="stockCode"></param>
+        /// <param name="type">0 股票 1 ETF 2 指数</param>
+        /// <returns></returns>
+        public async Task<List<StockPrice>> GetStockPrices(string stockCode, int type = 0)
         {
             try
             {
-                if (stockCode.StartsWith("sh") || stockCode.StartsWith("sz"))
+                if (type == 1 || stockCode.StartsWith("sh") || stockCode.StartsWith("sz"))
                 {
                     return new List<StockPrice>()
                     {
@@ -24,7 +30,7 @@ namespace V.Finance.Services
                 }
 
                 var list = new List<StockPrice>();
-                var code = $"0.{stockCode}";
+                var code = type == 2 ? $"1.{stockCode}" : $"0.{stockCode}";
                 using (var client = new HttpClient())
                 {
                     var response = await client.GetAsync($"http://push2his.eastmoney.com/api/qt/stock/kline/get?fields1=f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13&fields2=f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61&beg=0&end=29990101&secid={code}&klt=101&fqt=1");
