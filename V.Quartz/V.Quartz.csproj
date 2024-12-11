@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-	  <Version>1.0.0</Version>
+	  <Version>1.0.1</Version>
 	  <Authors>Venyo</Authors>
 	  <Description>木叉一人工作室封装的基于 Quartz 的定时任务类库</Description>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -14,14 +14,17 @@
   </PropertyGroup>
 
 	<ItemGroup>
-		<None Include="../logo.jpg" Pack="true" PackagePath="\"/>
-		<None Include="README.md" Pack="true" PackagePath="\"/>
+		<None Include="../logo.jpg" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.7" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Quartz" Version="3.1.0" />
     <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
   </ItemGroup>
 
 </Project>

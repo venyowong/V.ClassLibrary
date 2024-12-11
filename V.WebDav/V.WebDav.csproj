@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<Version>1.0.0</Version>
+	<Authors>Venyo</Authors>
+	<Description>木叉一人工作室 WebDav 封装</Description>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/venyowong/V.ClassLibrary</PackageProjectUrl>
+	<PackageIcon>logo.jpg</PackageIcon>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<PackageTags>WebDav</PackageTags>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../logo.jpg" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="WebDav.Client" Version="2.8.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\V.Common.Extensions\V.Common.Extensions.csproj" />
+	</ItemGroup>
+
+</Project>

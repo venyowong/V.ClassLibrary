@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "V.Messages", "V.Messages\V.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V.Finance", "V.Finance\V.Finance.csproj", "{7212023E-4685-40C7-A13C-651E77C1E050}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "V.WebDav", "V.WebDav\V.WebDav.csproj", "{DB38D0C1-76B3-4791-9920-7FC502EFA0FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{7212023E-4685-40C7-A13C-651E77C1E050}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7212023E-4685-40C7-A13C-651E77C1E050}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7212023E-4685-40C7-A13C-651E77C1E050}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB38D0C1-76B3-4791-9920-7FC502EFA0FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB38D0C1-76B3-4791-9920-7FC502EFA0FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB38D0C1-76B3-4791-9920-7FC502EFA0FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB38D0C1-76B3-4791-9920-7FC502EFA0FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
