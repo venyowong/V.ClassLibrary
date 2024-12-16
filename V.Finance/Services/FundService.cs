@@ -20,35 +20,61 @@ namespace V.Finance.Services
             {
                 using (var client = new HttpClient())
                 {
-                    client.DefaultRequestHeaders.Add("Referer", $"http://fundf10.eastmoney.com/jjjz_{fundCode}.html");
-                    var response = await client.GetAsync($"http://api.fund.eastmoney.com/f10/lsjz?fundCode={fundCode}&pageIndex=1&pageSize=10000");
-                    var json = await response.Content.ReadAsStringAsync();
-                    var result = json.ToObj<JObject>();
-                    return result["Data"]["LSJZList"].Select(x =>
-                    {
-                        if (!DateTime.TryParse(x["FSRQ"].ToString(), out DateTime date))
-                        {
-                            return default;
-                        }
-                        if (!decimal.TryParse(x["DWJZ"].ToString(), out decimal unitNav))
-                        {
-                            return default;
-                        }
-                        if (!decimal.TryParse(x["LJJZ"].ToString(), out decimal accUnitNav))
-                        {
-                            return default;
-                        }
-                        return new FundNav
+                    var js = await client.GetStringAsync($"https://fund.eastmoney.com/pingzhongdata/{fundCode}.js");
+                    var json = this.GetDataFromJS(js, "Data_netWorthTrend"); // 单位净值
+                    var navs = json.ToObj<JArray>()
+                        .Select(x => new FundNav
                         {
                             FundCode = fundCode,
-                            Date = date,
-                            UnitNav = unitNav,
-                            AccUnitNav = accUnitNav
-                        };
-                    })
-                    .Where(x => x != null)
-                    .OrderBy(x => x.Date)
-                    .ToList();
+                            Date = Converter.ToDateTimeFromMilliseconds(x["x"].Value<long>()),
+                            UnitNav = x["y"].Value<decimal>()
+                        }).OrderBy(x => x.Date).ToList();
+                    if (navs.IsNullOrEmpty())
+                    {
+                        return null;
+                    }
+
+                    json = this.GetDataFromJS(js, "Data_ACWorthTrend");
+                    var accNavs = json.ToObj<JArray>()
+                        .Select(x => new FundNav
+                        {
+                            FundCode = fundCode,
+                            Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
+                            AccUnitNav = x.Last().Value<decimal>()
+                        }).OrderBy(x => x.Date).ToList();
+                    int i = 0, j = 0;
+                    var result = new List<FundNav>();
+                    for (; i < navs.Count;)
+                    {
+                        for (; j < accNavs.Count;)
+                        {
+                            if (navs[i].Date == accNavs[j].Date)
+                            {
+                                result.Add(new FundNav
+                                {
+                                    FundCode = fundCode,
+                                    Date = navs[i].Date,
+                                    UnitNav = navs[i].UnitNav,
+                                    AccUnitNav = accNavs[j].AccUnitNav
+                                });
+                                i++;
+                                j++;
+                                break;
+                            }
+                            else if (navs[i].Date < accNavs[j].Date)
+                            {
+                                result.Add(navs[i]);
+                                i++;
+                                break;
+                            }
+                            else
+                            {
+                                result.Add(accNavs[j]);
+                                j++;
+                            }
+                        }
+                    }
+                    return result;
                 }
             }
             catch (Exception e)
@@ -431,6 +457,26 @@ namespace V.Finance.Services
                 Log.Error(e, $"FundService.GetFundManagerChangeList {fundCode} 获取基金经理变动列表失败");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 从天天基金的 js 文件中获取数据
+        /// </summary>
+        /// <param name="js"></param>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        private string GetDataFromJS(string js, string fieldName)
+        {
+            var fieldIndex = js.IndexOf(fieldName);
+            if (fieldIndex < 0)
+            {
+                return null;
+            }
+
+            js = js.Substring(fieldIndex);
+            var startIndex = js.IndexOf('[');
+            var endIndex = js.IndexOf("];");
+            return js.Substring(startIndex, endIndex - startIndex + 1);
         }
     }
 }

@@ -48,5 +48,16 @@ namespace V.Common.Extensions
                     return value;
             }
         }
+
+        /// <summary>
+        /// 将毫米级时间戳转化为 datetime
+        /// </summary>
+        /// <param name="milliseconds"></param>
+        /// <returns></returns>
+        public static DateTime ToDateTimeFromMilliseconds(double milliseconds)
+        {
+            var time = new DateTime(1970, 1, 1).ToLocalTime();
+            return time.AddMilliseconds(milliseconds);
+        }
     }
 }
