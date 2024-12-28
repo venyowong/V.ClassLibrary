@@ -138,5 +138,16 @@ namespace V.Finance.Services
             return (DateTime.MinValue, DateTime.MaxValue);
         }
         #endregion
+
+        /// <summary>
+        /// 获取历史交易日
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<DateTime>> GetTradingDays()
+        {
+            var stockService = new StockService();
+            var prices = await stockService.GetStockPrices("000001", 2); // 交易日数据以上证指数的行情数据为准
+            return prices?.Select(x => x.Date).OrderBy(x => x).ToList();
+        }
     }
 }
