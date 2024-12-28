@@ -22,26 +22,57 @@ namespace V.Finance.Services
                 {
                     var js = await client.GetStringAsync($"https://fund.eastmoney.com/pingzhongdata/{fundCode}.js");
                     var json = this.GetDataFromJS(js, "Data_netWorthTrend"); // 单位净值
-                    var navs = json.ToObj<JArray>()
-                        .Select(x => new FundNav
-                        {
-                            FundCode = fundCode,
-                            Date = Converter.ToDateTimeFromMilliseconds(x["x"].Value<long>()),
-                            UnitNav = x["y"].Value<decimal>()
-                        }).OrderBy(x => x.Date).ToList();
-                    if (navs.IsNullOrEmpty())
+                    List<FundNav> navs = null;
+                    if (!string.IsNullOrEmpty(json))
                     {
-                        return null;
+                        navs = json.ToObj<JArray>()
+                            .Select(x => new FundNav
+                            {
+                                FundCode = fundCode,
+                                Date = Converter.ToDateTimeFromMilliseconds(x["x"].Value<long>()),
+                                UnitNav = x["y"].Value<decimal>()
+                            }).OrderBy(x => x.Date).ToList();
+                        if (navs.IsNullOrEmpty())
+                        {
+                            return null;
+                        }
+                    }
+                    else // 货币基金
+                    {
+                        json = this.GetDataFromJS(js, "Data_millionCopiesIncome"); // 万分收益
+                        navs = json.ToObj<JArray>()
+                            .Select(x => new FundNav
+                            {
+                                FundCode = fundCode,
+                                Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
+                                UnitNav = x.Last().Value<decimal>()
+                            }).OrderBy(x => x.Date).ToList();
                     }
 
-                    json = this.GetDataFromJS(js, "Data_ACWorthTrend");
-                    var accNavs = json.ToObj<JArray>()
-                        .Select(x => new FundNav
-                        {
-                            FundCode = fundCode,
-                            Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
-                            AccUnitNav = x.Last().Value<decimal>()
-                        }).OrderBy(x => x.Date).ToList();
+                    json = this.GetDataFromJS(js, "Data_ACWorthTrend"); // 累计净值
+                    List<FundNav> accNavs = null;
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        accNavs = json.ToObj<JArray>()
+                            .Select(x => new FundNav
+                            {
+                                FundCode = fundCode,
+                                Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
+                                AccUnitNav = x.Last().Value<decimal>()
+                            }).OrderBy(x => x.Date).ToList();
+                    }
+                    else // 货币基金
+                    {
+                        json = this.GetDataFromJS(js, "Data_sevenDaysYearIncome"); // 累计净值
+                        accNavs = json.ToObj<JArray>()
+                            .Select(x => new FundNav
+                            {
+                                FundCode = fundCode,
+                                Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
+                                AccUnitNav = x.Last().Value<decimal>()
+                            }).OrderBy(x => x.Date).ToList();
+                    }
+                    
                     int i = 0, j = 0;
                     var result = new List<FundNav>();
                     for (; i < navs.Count;)
