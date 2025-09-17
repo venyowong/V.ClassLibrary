@@ -23,10 +23,7 @@ namespace V.Finance.Services
             {
                 if (type == 1 || stockCode.StartsWith("sh") || stockCode.StartsWith("sz"))
                 {
-                    return new List<StockPrice>()
-                    {
-                        await GetETFPrice(stockCode)
-                    };
+                    return await GetETFPrices(stockCode);
                 }
 
                 var list = new List<StockPrice>();
@@ -82,6 +79,42 @@ namespace V.Finance.Services
             catch (Exception e)
             {
                 Log.Error(e, $"EmService.GetETFPrice {stockCode} 失败");
+                return null;
+            }
+        }
+
+        public static async Task<List<StockPrice>> GetETFPrices(string stockCode)
+        {
+            if (stockCode.StartsWith("sh") || stockCode.StartsWith("sz"))
+            {
+                stockCode = stockCode.Substring(2);
+            }
+
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var json = await client.GetStringAsync($"http://115.190.9.197:8080/api/public/fund_etf_hist_em?symbol={stockCode}&adjust=qfq");
+                    var result = json.ToObj<JArray>();
+                    var list = new List<StockPrice>();
+                    foreach (var item in result)
+                    {
+                        list.Add(new StockPrice
+                        {
+                            StockCode = stockCode,
+                            Date = DateTime.Parse(item["日期"].ToString()),
+                            Open = decimal.Parse(item["开盘"].ToString()),
+                            Close = decimal.Parse(item["收盘"].ToString()),
+                            Max = decimal.Parse(item["最高"].ToString()),
+                            Min = decimal.Parse(item["最低"].ToString())
+                        });
+                    }
+                    return list;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"EmService.GetETFPrices {stockCode} 失败");
                 return null;
             }
         }
