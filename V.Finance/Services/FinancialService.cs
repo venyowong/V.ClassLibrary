@@ -8,13 +8,229 @@ using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using V.Common.Extensions;
 using V.Finance.Models;
 
 namespace V.Finance.Services
 {
     public class FinancialService
     {
+        public async Task<double> CalcAlpha(List<Point> points, List<Point> bases, double? riskFreeRate = null)
+        {
+            var alignLists = this.Align(points, bases);
+            var rp = this.CalcYieldAnnual(alignLists.List1); // 策略年化收益率
+            var rm = this.CalcYieldAnnual(alignLists.List2); // 基准年化收益率
+            if (riskFreeRate == null)
+            {
+                riskFreeRate = await this.GetRiskFreeRate();
+            }
+            var beta = this.CalcBeta(points, bases);
+            return rp - riskFreeRate.Value - beta * (rm - riskFreeRate.Value);
+        }
+
+        public double CalcBeta(List<Point> points, List<Point> bases)
+        {
+            var alignLists = this.Align(points, bases);
+            var sample1 = this.GetIncreaseRates(alignLists.List1).Select(x => (double)x.Rate).ToArray();
+            var sample2 = this.GetIncreaseRates(alignLists.List2).Select(x => (double)x.Rate).ToArray();
+            var cov = ArrayStatistics.Covariance(sample1, sample2);
+            var variance = ArrayStatistics.Variance(sample2);
+            return cov / variance;
+        }
+
+        /// <summary>
+        /// 计算下行波动率
+        /// </summary>
+        /// <returns></returns>
+        public double CalcDownsideRisk(List<FundNav> navs)
+        {
+            return this.CalcDownsideRisk(navs.Select(x => new Point
+            {
+                Date = x.Date,
+                Price = x.AccUnitNav
+            }).ToList());
+        }
+
+        /// <summary>
+        /// 计算下行波动率
+        /// </summary>
+        /// <returns></returns>
+        public double CalcDownsideRisk(List<Point> points)
+        {
+            var rates = this.GetIncreaseRates(points); // 策略每日收益率
+            var first = points.OrderBy(x => x.Date).First();
+            var last = points.OrderBy(x => x.Date).Last();
+            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
+            var rpi = 0d; // 策略至第 i 日的平均收益率
+            var risk = 0d;
+            for (int i = 0; i < rates.Count; i++)
+            {
+                var rate = (double)rates[i].Rate;
+                rpi = (rpi * i + rate) / (i + 1);
+                if (rate < rpi)
+                {
+                    risk += Math.Pow(rate - rpi, 2);
+                }
+            }
+            risk = Math.Sqrt(risk * 365 / n);
+            return risk;
+        }
+
+        /// <summary>
+        /// 计算最大回撤
+        /// </summary>
+        /// <returns>返回最大回撤(小数形式)，若结果为 0 则表示没有发生回撤</returns>
+        public double CalcMaxDrawdown(List<FundNav> navs)
+        {
+            return this.CalcMaxDrawdown(navs.Select(x => new Point
+            {
+                Date = x.Date,
+                Price = x.AccUnitNav
+            }).ToList());
+        }
+
+        /// <summary>
+        /// 计算最大回撤
+        /// </summary>
+        /// <returns>返回最大回撤(小数形式)，若结果为 0 则表示没有发生回撤</returns>
+        public double CalcMaxDrawdown(List<Point> points)
+        {
+            var rates = this.GetIncreaseRates(points);
+            decimal p = 1, max = 0;
+            foreach (var rate in rates)
+            {
+                p *= 1 + rate.Rate;
+                if (p - 1 < max)
+                {
+                    max = p - 1;
+                }
+                if (p > 1)
+                {
+                    p = 1;
+                }
+            }
+            return (double)max;
+        }
+
+        /// <summary>
+        /// 计算夏普率
+        /// </summary>
+        /// <returns></returns>
+        public Task<double> CalcSharpe(List<FundNav> navs, double? riskFreeRate = null)
+        {
+            return this.CalcSharpe(navs.Select(x => new Point
+            {
+                Date = x.Date,
+                Price = x.AccUnitNav
+            }).ToList(), riskFreeRate);
+        }
+
+        /// <summary>
+        /// 计算夏普率
+        /// </summary>
+        /// <returns></returns>
+        public async Task<double> CalcSharpe(List<Point> points, double? riskFreeRate = null)
+        {
+            var yieldAnnual = this.CalcYieldAnnual(points);
+            var volatility = this.CalcVolatility(points);
+            if (riskFreeRate == null)
+            {
+                riskFreeRate = await this.GetRiskFreeRate();
+            }
+            return (yieldAnnual - riskFreeRate.Value) / volatility; // 无风险利率参考一年期定存利率
+        }
+
+        /// <summary>
+        /// 计算索提诺比率
+        /// </summary>
+        /// <returns></returns>
+        public Task<double> CalcSortinoRatio(List<FundNav> navs, double? riskFreeRate = null)
+        {
+            return this.CalcSortinoRatio(navs.Select(x => new Point
+            {
+                Date = x.Date,
+                Price = x.AccUnitNav
+            }).ToList(), riskFreeRate);
+        }
+
+        /// <summary>
+        /// 计算索提诺比率
+        /// </summary>
+        /// <returns></returns>
+        public async Task<double> CalcSortinoRatio(List<Point> points, double? riskFreeRate = null)
+        {
+            var yieldAnnual = this.CalcYieldAnnual(points);
+            if (riskFreeRate == null)
+            {
+                riskFreeRate = await this.GetRiskFreeRate();
+            }
+            var downsideRisk = this.CalcDownsideRisk(points);
+            return (yieldAnnual - riskFreeRate.Value) / downsideRisk;
+        }
+
+        /// <summary>
+        /// 计算波动率
+        /// </summary>
+        /// <returns></returns>
+        public double CalcVolatility(List<FundNav> navs)
+        {
+            return this.CalcVolatility(navs.Select(x => new Point
+            {
+                Date = x.Date,
+                Price = x.AccUnitNav
+            }).ToList());
+        }
+
+        /// <summary>
+        /// 计算波动率
+        /// </summary>
+        /// <returns></returns>
+        public double CalcVolatility(List<Point> points)
+        {
+            var rates = this.GetIncreaseRates(points); // 策略每日收益率
+            var average = (double)rates.Average(x => x.Rate); // 策略每日收益率的平均值
+            var first = points.OrderBy(x => x.Date).First();
+            var last = points.OrderBy(x => x.Date).Last();
+            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
+            return Math.Sqrt(rates.Sum(x => Math.Pow((double)x.Rate - average, 2)) / (n - 1) * 365);
+        }
+
+        /// <summary>
+        /// 计算年化收益率
+        /// </summary>
+        /// <returns>年化收益率(小数形式)</returns>
+        public double CalcYieldAnnual(List<FundNav> navs)
+        {
+            if (navs == null || navs.Count <= 1)
+            {
+                return 0;
+            }
+
+            return this.CalcYieldAnnual(navs.Select(x => new Point
+            {
+                Date = x.Date,
+                Price = x.AccUnitNav
+            }).ToList());
+        }
+
+        /// <summary>
+        /// 计算年化收益率
+        /// </summary>
+        /// <returns>年化收益率(小数形式)</returns>
+        public double CalcYieldAnnual(List<Point> points)
+        {
+            if (points == null || points.Count <= 1)
+            {
+                return 0;
+            }
+
+            points = points.OrderBy(x => x.Date).ToList();
+            var first = points.OrderBy(x => x.Date).First();
+            var last = points.OrderBy(x => x.Date).Last();
+            var p = last.Price / first.Price - 1; // 策略收益
+            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
+            return Math.Pow(1 + (double)p, 365.0 / n) - 1;
+        }
+
         /// <summary>
         /// 将年化收益率换算成月度收益率(复利)
         /// </summary>
@@ -23,7 +239,6 @@ namespace V.Finance.Services
         public double ConvertAnnualToMonthly(double annualYield)
         {
             return Math.Pow(1 + annualYield, 1 / 12) - 1;
-            //return Math.Pow(Math.E, Math.Log(1 + annualYield) / 12) - 1;
         }
 
         /// <summary>
@@ -98,197 +313,39 @@ namespace V.Finance.Services
         }
 
         /// <summary>
-        /// 计算年化收益率
+        /// 计算均线
         /// </summary>
-        /// <returns>年化收益率(小数形式)</returns>
-        public double CalcYieldAnnual(List<FundNav> navs)
+        /// <param name="points"></param>
+        /// <param name="interval">过去N个交易日</param>
+        /// <returns></returns>
+        public List<Point> GetAverageLine(List<Point> points, int interval)
         {
-            if (navs == null || navs.Count <= 1)
+            if (points?.Count <= interval)
             {
-                return 0;
+                return null;
             }
 
-            return this.CalcYieldAnnual(navs.Select(x => new Point
+            var result = new List<Point>();
+            for (int i = interval - 1; i < points.Count; i++)
             {
-                Date = x.Date,
-                Price = x.AccUnitNav
-            }).ToList());
-        }
-
-        /// <summary>
-        /// 计算年化收益率
-        /// </summary>
-        /// <returns>年化收益率(小数形式)</returns>
-        public double CalcYieldAnnual(List<Point> points)
-        {
-            if (points == null || points.Count <= 1)
-            {
-                return 0;
-            }
-
-            points = points.OrderBy(x => x.Date).ToList();
-            var first = points.OrderBy(x => x.Date).First();
-            var last = points.OrderBy(x => x.Date).Last();
-            var p = last.Price / first.Price - 1; // 策略收益
-            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
-            return Math.Pow(1 + (double)p, 365.0 / n) - 1;
-        }
-
-        /// <summary>
-        /// 计算最大回撤
-        /// </summary>
-        /// <returns>返回最大回撤(小数形式)，若结果为 0 则表示没有发生回撤</returns>
-        public double CalcMaxDrawdown(List<FundNav> navs)
-        {
-            return this.CalcMaxDrawdown(navs.Select(x => new Point
-            {
-                Date = x.Date,
-                Price = x.AccUnitNav
-            }).ToList());
-        }
-
-        /// <summary>
-        /// 计算最大回撤
-        /// </summary>
-        /// <returns>返回最大回撤(小数形式)，若结果为 0 则表示没有发生回撤</returns>
-        public double CalcMaxDrawdown(List<Point> points)
-        {
-            var rates = this.GetIncreaseRates(points);
-            decimal p = 1, max = 0;
-            foreach (var rate in rates)
-            {
-                p *= 1 + rate.Rate;
-                if (p - 1 < max)
+                if (result.Any())
                 {
-                    max = p - 1;
+                    result.Add(new Point
+                    {
+                        Price = (points[i - 1].Price * interval - points[i - interval + 1].Price + points[i].Price) / interval,
+                        Date = points[i].Date
+                    });
                 }
-                if (p > 1)
+                else
                 {
-                    p = 1;
+                    result.Add(new Point
+                    {
+                        Date = points[i].Date,
+                        Price = points.GetRange(0, interval).Average(x => x.Price)
+                    });
                 }
             }
-            return (double)max;
-        }
-
-        /// <summary>
-        /// 计算波动率
-        /// </summary>
-        /// <returns></returns>
-        public double CalcVolatility(List<FundNav> navs)
-        {
-            return this.CalcVolatility(navs.Select(x => new Point
-            {
-                Date = x.Date,
-                Price = x.AccUnitNav
-            }).ToList());
-        }
-
-        /// <summary>
-        /// 计算波动率
-        /// </summary>
-        /// <returns></returns>
-        public double CalcVolatility(List<Point> points)
-        {
-            var rates = this.GetIncreaseRates(points); // 策略每日收益率
-            var average = (double)rates.Average(x => x.Rate); // 策略每日收益率的平均值
-            var first = points.OrderBy(x => x.Date).First();
-            var last = points.OrderBy(x => x.Date).Last();
-            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
-            return Math.Sqrt(rates.Sum(x => Math.Pow((double)x.Rate - average, 2)) / (n - 1) * 365);
-        }
-
-        /// <summary>
-        /// 计算夏普率
-        /// </summary>
-        /// <returns></returns>
-        public Task<double> CalcSharpe(List<FundNav> navs, double? riskFreeRate = null)
-        {
-            return this.CalcSharpe(navs.Select(x => new Point
-            {
-                Date = x.Date,
-                Price = x.AccUnitNav
-            }).ToList(), riskFreeRate);
-        }
-
-        /// <summary>
-        /// 计算夏普率
-        /// </summary>
-        /// <returns></returns>
-        public async Task<double> CalcSharpe(List<Point> points, double? riskFreeRate = null)
-        {
-            var yieldAnnual = this.CalcYieldAnnual(points);
-            var volatility = this.CalcYieldAnnual(points);
-            if (riskFreeRate == null)
-            {
-                riskFreeRate = await this.GetRiskFreeRate();
-            }
-            return (yieldAnnual - riskFreeRate.Value) / volatility; // 无风险利率参考一年期定存利率
-        }
-
-        /// <summary>
-        /// 计算下行波动率
-        /// </summary>
-        /// <returns></returns>
-        public double CalcDownsideRisk(List<FundNav> navs)
-        {
-            return this.CalcDownsideRisk(navs.Select(x => new Point
-            {
-                Date = x.Date,
-                Price = x.AccUnitNav
-            }).ToList());
-        }
-
-        /// <summary>
-        /// 计算下行波动率
-        /// </summary>
-        /// <returns></returns>
-        public double CalcDownsideRisk(List<Point> points)
-        {
-            var rates = this.GetIncreaseRates(points); // 策略每日收益率
-            var first = points.OrderBy(x => x.Date).First();
-            var last = points.OrderBy(x => x.Date).Last();
-            var n = (last.Date - first.Date).TotalDays; // 策略执行天数
-            var rpi = 0d; // 策略至第 i 日的平均收益率
-            var risk = 0d;
-            for (int i = 0; i < rates.Count; i++)
-            {
-                var rate = (double)rates[i].Rate;
-                rpi = (rpi * i + rate) / (i + 1);
-                if (rate < rpi)
-                {
-                    risk += Math.Pow(rate - rpi, 2);
-                }
-            }
-            risk = Math.Sqrt(risk * 365 / n);
-            return risk;
-        }
-
-        /// <summary>
-        /// 计算索提诺比率
-        /// </summary>
-        /// <returns></returns>
-        public Task<double> CalcSortinoRatio(List<FundNav> navs, double? riskFreeRate = null)
-        {
-            return this.CalcSortinoRatio(navs.Select(x => new Point
-            {
-                Date = x.Date,
-                Price = x.AccUnitNav
-            }).ToList(), riskFreeRate);
-        }
-
-        /// <summary>
-        /// 计算索提诺比率
-        /// </summary>
-        /// <returns></returns>
-        public async Task<double> CalcSortinoRatio(List<Point> points, double? riskFreeRate = null)
-        {
-            var yieldAnnual = this.CalcYieldAnnual(points);
-            if (riskFreeRate == null)
-            {
-                riskFreeRate = await this.GetRiskFreeRate();
-            }
-            var downsideRisk = this.CalcDownsideRisk(points);
-            return (yieldAnnual - riskFreeRate.Value) / downsideRisk;
+            return result;
         }
 
         /// <summary>
@@ -330,29 +387,6 @@ namespace V.Finance.Services
             {
                 return 0.0145;
             }
-        }
-
-        public double CalcBeta(List<Point> points, List<Point> bases)
-        {
-            var alignLists = this.Align(points, bases);
-            var sample1 = this.GetIncreaseRates(alignLists.List1).Select(x => (double)x.Rate).ToArray();
-            var sample2 = this.GetIncreaseRates(alignLists.List2).Select(x => (double)x.Rate).ToArray();
-            var cov = ArrayStatistics.Covariance(sample1, sample2);
-            var variance = ArrayStatistics.Variance(sample2);
-            return cov / variance;
-        }
-
-        public async Task<double> CalcAlpha(List<Point> points, List<Point> bases, double? riskFreeRate = null)
-        {
-            var alignLists = this.Align(points, bases);
-            var rp = this.CalcYieldAnnual(alignLists.List1); // 策略年化收益率
-            var rm = this.CalcYieldAnnual(alignLists.List2); // 基准年化收益率
-            if (riskFreeRate == null)
-            {
-                riskFreeRate = await this.GetRiskFreeRate();
-            }
-            var beta = this.CalcBeta(points, bases);
-            return rp - riskFreeRate.Value - beta * (rm - riskFreeRate.Value);
         }
 
         private (List<Point> List1, List<Point> List2) Align(List<Point> list1, List<Point> list2)
