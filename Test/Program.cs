@@ -18,9 +18,9 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
 
-var prices = await new StockService().GetStockPrices("sh512800");
+//var prices = await new StockService().GetStockPrices("sh512800");
 var fundService = new FundService();
-var navs = await fundService.GetFundNavs("159673");
+var navs = await fundService.GetFundNavs("513100");
 var financialService = new FinancialService();
 var riskFreeRate = await financialService.GetRiskFreeRate();
 var points = navs.Where(x => x.Date >= new DateTime(2024, 1, 1))
@@ -29,14 +29,14 @@ var points = navs.Where(x => x.Date >= new DateTime(2024, 1, 1))
         Date = x.Date,
         Price = x.AccUnitNav
     }).ToList();
-var bases = prices.Where(x => x.Date >= new DateTime(2024, 1, 1))
-    .Select(x => new Point
-    {
-        Date = x.Date,
-        Price = x.Close
-    }).ToList();
-var alpha = await financialService.CalcAlpha(points, bases, riskFreeRate);
-var beta = financialService.CalcBeta(points, bases);
+//var bases = prices.Where(x => x.Date >= new DateTime(2024, 1, 1))
+//    .Select(x => new Point
+//    {
+//        Date = x.Date,
+//        Price = x.Close
+//    }).ToList();
+//var alpha = await financialService.CalcAlpha(points, bases, riskFreeRate);
+//var beta = financialService.CalcBeta(points, bases);
 
 var query = new QueryExpression("(sizeLevel == 'B' || sizeLevel == 'KB') && (creationDate >= '2022-12-25' && creationDate <= '2023-05-01')");
 

@@ -30,8 +30,11 @@ namespace V.Finance.Services
                             {
                                 FundCode = fundCode,
                                 Date = Converter.ToDateTimeFromMilliseconds(x["x"].Value<long>()),
-                                UnitNav = x["y"].Value<decimal>()
-                            }).OrderBy(x => x.Date).ToList();
+                                UnitNav = x["y"].Value<decimal?>() ?? decimal.MinValue
+                            })
+                            .Where(x => x.UnitNav > decimal.MinValue)
+                            .OrderBy(x => x.Date)
+                            .ToList();
                         if (navs.IsNullOrEmpty())
                         {
                             return null;
@@ -45,8 +48,11 @@ namespace V.Finance.Services
                             {
                                 FundCode = fundCode,
                                 Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
-                                UnitNav = x.Last().Value<decimal>()
-                            }).OrderBy(x => x.Date).ToList();
+                                UnitNav = x.Last().Value<decimal?>() ?? decimal.MinValue
+                            })
+                            .Where(x => x.UnitNav > decimal.MinValue)
+                            .OrderBy(x => x.Date)
+                            .ToList();
                     }
 
                     json = this.GetDataFromJS(js, "Data_ACWorthTrend"); // 累计净值
@@ -58,8 +64,11 @@ namespace V.Finance.Services
                             {
                                 FundCode = fundCode,
                                 Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
-                                AccUnitNav = x.Last().Value<decimal>()
-                            }).OrderBy(x => x.Date).ToList();
+                                AccUnitNav = x.Last().Value<decimal?>() ?? decimal.MinValue
+                            })
+                            .Where(x => x.AccUnitNav > decimal.MinValue)
+                            .OrderBy(x => x.Date)
+                            .ToList();
                     }
                     else // 货币基金
                     {
@@ -69,8 +78,11 @@ namespace V.Finance.Services
                             {
                                 FundCode = fundCode,
                                 Date = Converter.ToDateTimeFromMilliseconds(x.First().Value<long>()),
-                                AccUnitNav = x.Last().Value<decimal>()
-                            }).OrderBy(x => x.Date).ToList();
+                                AccUnitNav = x.Last().Value<decimal?>() ?? decimal.MinValue
+                            })
+                            .Where(x => x.AccUnitNav > decimal.MinValue)
+                            .OrderBy(x => x.Date)
+                            .ToList();
                     }
                     
                     int i = 0, j = 0;
