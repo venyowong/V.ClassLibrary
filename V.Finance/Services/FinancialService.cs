@@ -65,7 +65,14 @@ namespace V.Finance.Services
             for (int i = 0; i < rates.Count; i++)
             {
                 var rate = (double)rates[i].Rate;
-                rpi = (rpi * i + rate) / (i + 1);
+                if (i == 0)
+                {
+                    rpi = rate;
+                }
+                else
+                {
+                    rpi = ((rpi * i + 1) * (1 + rate) - 1) / (i + 1);
+                }
                 if (rate < rpi)
                 {
                     risk += Math.Pow(rate - rpi, 2);
@@ -73,6 +80,46 @@ namespace V.Finance.Services
             }
             risk = Math.Sqrt(risk * 365 / n);
             return risk;
+        }
+
+        public async Task<double?> CalcHierarchicalSortinoRatio(List<Point> points, double? riskFreeRate = null)
+        {
+            if (points.Count < 60)
+            {
+                return null;
+            }
+
+            if (riskFreeRate == null)
+            {
+                riskFreeRate = await this.GetRiskFreeRate();
+            }
+            var lastYear = points.Last().Date.AddYears(-1);
+            var p1 = points.FindAll(x => x.Date > lastYear);
+            var p2 = points.FindAll(x => x.Date <= lastYear);
+            var s1 = await CalcSortinoRatio(p1, riskFreeRate);
+            var s2 = await CalcHierarchicalSortinoRatio(p2, riskFreeRate);
+            if (s2 == null) { return s1; }
+
+            var vol = CalcVolatility(p1);
+            var yield = (double)(p1.Last().Price / p1[p1.Count - 21].Price - 1);
+            double threshold = -1.5 * vol * Math.Sqrt(20);
+            if (vol > 0.025)
+            {
+                threshold = -2.0 * vol * Math.Sqrt(20); // 高波动要跌超 -2σ 才认为出事
+            }
+            bool isPanic = yield <= threshold;
+            if (vol <= 0.01)
+            {
+                return 0.4 * s1 + 0.6 * s2;
+            }
+            else if (vol <= 0.025)
+            {
+                return isPanic ? (0.40 * s1 + 0.60 * s2) : (0.65 * s1 + 0.35 * s2);
+            }
+            else
+            {
+                return isPanic ? (0.25 * s1 + 0.75 * s2) : (0.80 * s1 + 0.20 * s2);
+            }
         }
 
         /// <summary>
@@ -348,12 +395,15 @@ namespace V.Finance.Services
             return result;
         }
 
+        private static double? _riskFreeRate = null;
         /// <summary>
         /// 无风险利率参考一年期定存利率
         /// </summary>
         /// <returns></returns>
         public async Task<double> GetRiskFreeRate()
         {
+            if (_riskFreeRate != null) { return _riskFreeRate.Value; }
+
             try
             {
                 var web = new HtmlWeb();
@@ -376,16 +426,19 @@ namespace V.Finance.Services
 
                         if (tds[0].InnerText == "一年")
                         {
-                            return double.Parse(WebUtility.HtmlDecode(tds[1].InnerText).Trim()) / 100;
+                            _riskFreeRate = double.Parse(WebUtility.HtmlDecode(tds[1].InnerText).Trim()) / 100;
+                            return _riskFreeRate.Value;
                         }
                     }
 
-                    return 0.0145;
+                    _riskFreeRate = 0.0145;
+                    return _riskFreeRate.Value;
                 }
             }
             catch
             {
-                return 0.0145;
+                _riskFreeRate = 0.0145;
+                return _riskFreeRate.Value;
             }
         }
 
