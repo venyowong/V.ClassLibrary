@@ -27,6 +27,30 @@ namespace V.Finance.Services
             return rp - riskFreeRate.Value - beta * (rm - riskFreeRate.Value);
         }
 
+        /// <summary>
+        /// 计算年化震荡波动率
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="window">滚动窗口</param>
+        /// <returns></returns>
+        public double? CalcAnnualShakeVol(List<Point> points, int window = 20)
+        {
+            if (points.Count < window || window <= 2)
+            {
+                return null;
+            }
+
+            var avgAmp = Enumerable.Range(0, points.Count / window)
+                .Average(i =>
+                {
+                    var list = points.Skip(i * window).Take(window).ToList();
+                    var h = list.Max(x => x.Price);
+                    var l = list.Min(x => x.Price);
+                    return (h - l) / ((h + l) / 2);
+                }); // 全部滚动窗口振幅均值
+            return (double)avgAmp * Math.Sqrt(250.0 / window);
+        }
+
         public double CalcBeta(List<Point> points, List<Point> bases)
         {
             var alignLists = this.Align(points, bases);
